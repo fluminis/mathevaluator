@@ -13,27 +13,41 @@ import com.fuminis.mathevaluator.token.Pow;
 import com.fuminis.mathevaluator.token.Subtraction;
 import com.fuminis.mathevaluator.token.Token;
 import com.fuminis.mathevaluator.token.TokenFactory;
+import com.fuminis.mathevaluator.token.VariableFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 public class MathEvaluator {
 
-    private List<TokenFactory> tokenFactories = new ArrayList<>();
+    private static List<TokenFactory> DEFAULT_FACTORIES = List.of(
+            new NumberFactory(),
+            new Addition(),
+            new Subtraction(),
+            new Negative(),
+            new Multiplication(),
+            new Division(),
+            new Pow(),
+            new OpenParenthesis(),
+            new CloseParenthesis()
+    );
+
+    private VariableFactory variableFactory;
+    private final List<TokenFactory> tokenFactories;
 
     public MathEvaluator() {
-        this.tokenFactories = List.of(
-                new NumberFactory(),
-                new Addition(),
-                new Subtraction(),
-                new Negative(),
-                new Multiplication(),
-                new Division(),
-                new Pow(),
-                new OpenParenthesis(),
-                new CloseParenthesis()
-        );
+        this.tokenFactories = new ArrayList<>(DEFAULT_FACTORIES);
+    }
+
+    public MathEvaluator setVariables(Map<String, Double> variables) {
+        if (variableFactory == null) {
+            variableFactory = new VariableFactory();
+            tokenFactories.add(variableFactory);
+        }
+        variableFactory.setVariables(variables);
+        return this;
     }
 
     public double calculate(String expression) {

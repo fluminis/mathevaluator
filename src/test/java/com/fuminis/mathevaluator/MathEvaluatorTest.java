@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
+import java.util.Map;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class MathEvaluatorTest {
@@ -69,6 +71,13 @@ class MathEvaluatorTest {
         assertThat(new MathEvaluator().calculate("2*3+1")).isEqualTo(7);
         assertThat(new MathEvaluator().calculate("1+2*3+1")).isEqualTo(8);
         assertThat(new MathEvaluator().calculate("1*2+3*1")).isEqualTo(5);
+    }
+
+    @Test
+    void variables() {
+        assertThat(new MathEvaluator().setVariables(Map.of("x", 2.0)).calculate("1+x*3")).isEqualTo(7);
+        assertThat(new MathEvaluator().setVariables(Map.of("x", 3.0)).calculate("1+x*3")).isEqualTo(10);
+        assertThat(new MathEvaluator().setVariables(Map.of("x", 2.0)).calculate("1+(x^3)")).isEqualTo(9);
     }
 
     @ParameterizedTest
