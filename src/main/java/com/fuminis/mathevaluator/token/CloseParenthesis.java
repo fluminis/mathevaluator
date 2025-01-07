@@ -13,4 +13,12 @@ public class CloseParenthesis extends OperatorFactory {
     public Expr getExpr(Stack<Expr> operands) {
         return null;
     }
+
+    @Override
+    public void toExpression(Stack<Expr> operands, Stack<OperatorFactory> operators) {
+        while (operators.peek().charOperator() != '(') {
+            operands.push(operators.pop().getExpr(operands));
+        }
+        operators.pop();
+    }
 }

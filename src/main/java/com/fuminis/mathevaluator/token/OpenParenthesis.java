@@ -13,4 +13,9 @@ public class OpenParenthesis extends OperatorFactory {
     public Expr getExpr(Stack<Expr> operands) {
         return null;
     }
+
+    @Override
+    public void toExpression(Stack<Expr> operands, Stack<OperatorFactory> operators) {
+        operators.push(this);
+    }
 }

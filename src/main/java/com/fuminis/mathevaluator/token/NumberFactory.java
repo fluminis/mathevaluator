@@ -1,7 +1,5 @@
 package com.fuminis.mathevaluator.token;
 
-import com.fuminis.mathevaluator.expr.Number;
-
 import java.util.Stack;
 
 public class NumberFactory implements TokenFactory {
@@ -16,7 +14,10 @@ public class NumberFactory implements TokenFactory {
         do {
             currentToken += chars.pop();
         } while (!chars.empty() && (Character.isDigit(chars.peek()) || chars.peek() == '.'));
-        return new Number(Double.parseDouble(currentToken));
+        double number = Double.parseDouble(currentToken);
+        return (operands, operators) -> {
+            operands.push(() -> number);
+        };
     }
 
     public boolean nextTokenIsOperatorOrStart() {

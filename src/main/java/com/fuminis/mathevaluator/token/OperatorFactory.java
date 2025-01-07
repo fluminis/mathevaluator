@@ -20,6 +20,14 @@ public class OperatorFactory implements Token, TokenFactory {
         this.generator = generator;
     }
 
+    @Override
+    public void toExpression(Stack<Expr> operands, Stack<OperatorFactory> operators) {
+        if (!operators.empty() && operators.peek().precedence() >= this.precedence()) {
+            operands.push(operators.pop().getExpr(operands));
+        }
+        operators.push(this);
+    }
+
     public Expr getExpr(Stack<Expr> operands) {
         return generator.apply(operands);
     }

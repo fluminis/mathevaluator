@@ -1,7 +1,6 @@
 package com.fuminis.mathevaluator;
 
 import com.fuminis.mathevaluator.expr.Expr;
-import com.fuminis.mathevaluator.expr.Number;
 import com.fuminis.mathevaluator.token.Addition;
 import com.fuminis.mathevaluator.token.CloseParenthesis;
 import com.fuminis.mathevaluator.token.Division;
@@ -76,21 +75,7 @@ public class MathEvaluator {
         Stack<Expr> operands = new Stack<>();
         Stack<OperatorFactory> operators = new Stack<>();
         for (Token token : tokens) {
-            if (token instanceof Number number) {
-                operands.push(number);
-            } else if (token instanceof OperatorFactory operator) {
-                if (operator.charOperator() == ')') {
-                    while (operators.peek().charOperator() != '(') {
-                        operands.push(operators.pop().getExpr(operands));
-                    }
-                    operators.pop();
-                } else {
-                    if (!operators.empty() && operators.peek().precedence() >= operator.precedence() && operator.charOperator() != '(') {
-                        operands.push(operators.pop().getExpr(operands));
-                    }
-                    operators.push(operator);
-                }
-            }
+            token.toExpression(operands, operators);
         }
         while (!operators.empty()) {
             operands.push(operators.pop().getExpr(operands));
