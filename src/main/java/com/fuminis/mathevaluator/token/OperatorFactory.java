@@ -1,12 +1,11 @@
-package com.fuminis.mathevaluator.operator;
+package com.fuminis.mathevaluator.token;
 
 import com.fuminis.mathevaluator.expr.Expr;
-import com.fuminis.mathevaluator.token.Token;
 
 import java.util.Stack;
 import java.util.function.Function;
 
-public class OperatorFactory implements Token {
+public class OperatorFactory implements Token, TokenFactory {
     private final char charOperator;
     private final int precedence;
     private final boolean nextTokenIsOperatorOrStart;
@@ -30,8 +29,8 @@ public class OperatorFactory implements Token {
         return charOperator + "(" + precedence + ")";
     }
 
-    public boolean support(char aChar, boolean prevTokenIsOperatorOrStart) {
-        return charOperator == aChar && this.prevTokenIsOperatorOrStart == prevTokenIsOperatorOrStart;
+    public boolean support(Stack<Character> chars, boolean prevTokenIsOperatorOrStart) {
+        return charOperator == chars.peek() && this.prevTokenIsOperatorOrStart == prevTokenIsOperatorOrStart;
     }
 
     public boolean nextTokenIsOperatorOrStart() {
@@ -44,5 +43,10 @@ public class OperatorFactory implements Token {
 
     public char charOperator() {
         return charOperator;
+    }
+
+    public Token getToken(Stack<Character> chars) {
+        chars.pop();
+        return this;
     }
 }

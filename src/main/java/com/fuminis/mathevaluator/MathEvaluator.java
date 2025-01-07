@@ -2,16 +2,18 @@ package com.fuminis.mathevaluator;
 
 import com.fuminis.mathevaluator.expr.Expr;
 import com.fuminis.mathevaluator.expr.Number;
-import com.fuminis.mathevaluator.operator.Addition;
-import com.fuminis.mathevaluator.operator.CloseParenthesis;
-import com.fuminis.mathevaluator.operator.Division;
-import com.fuminis.mathevaluator.operator.Multiplication;
-import com.fuminis.mathevaluator.operator.Negative;
-import com.fuminis.mathevaluator.operator.OpenParenthesis;
-import com.fuminis.mathevaluator.operator.OperatorFactory;
-import com.fuminis.mathevaluator.operator.Pow;
-import com.fuminis.mathevaluator.operator.Subtraction;
+import com.fuminis.mathevaluator.token.Addition;
+import com.fuminis.mathevaluator.token.CloseParenthesis;
+import com.fuminis.mathevaluator.token.Division;
+import com.fuminis.mathevaluator.token.Multiplication;
+import com.fuminis.mathevaluator.token.Negative;
+import com.fuminis.mathevaluator.token.NumberFactory;
+import com.fuminis.mathevaluator.token.OpenParenthesis;
+import com.fuminis.mathevaluator.token.OperatorFactory;
+import com.fuminis.mathevaluator.token.Pow;
+import com.fuminis.mathevaluator.token.Subtraction;
 import com.fuminis.mathevaluator.token.Token;
+import com.fuminis.mathevaluator.token.TokenFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,10 +21,11 @@ import java.util.Stack;
 
 public class MathEvaluator {
 
-    private List<OperatorFactory> operatorFactories =new ArrayList<>();
+    private List<TokenFactory> tokenFactories = new ArrayList<>();
 
     public MathEvaluator() {
-        this.operatorFactories = List.of(
+        this.tokenFactories = List.of(
+                new NumberFactory(),
                 new Addition(),
                 new Subtraction(),
                 new Negative(),
@@ -41,35 +44,32 @@ public class MathEvaluator {
     }
 
     private List<Token> tokenize(String expression) {
+        Stack<Character> chars = getCharacterStack(expression);
         List<Token> tokens = new ArrayList<>();
-        int i = 0;
         boolean prevTokenIsOperatorOrStart = true;
-        char[] chars = expression.toCharArray();
         do {
-            if (Character.isWhitespace(chars[i])) {
-                i++;
+            if (Character.isWhitespace(chars.peek())) {
+                chars.pop();
                 continue;
             }
-            if (Character.isDigit(chars[i]) || chars[i] == '.') {
-                String currentToken = "";
-                do {
-                    currentToken += chars[i];
-                    i++;
-                } while (i < chars.length && (Character.isDigit(chars[i]) || chars[i] == '.'));
-                tokens.add(new Number(Double.parseDouble(currentToken)));
-                prevTokenIsOperatorOrStart = false;
-                continue;
-            }
-            for (OperatorFactory operatorFactory : operatorFactories) {
-                if (operatorFactory.support(chars[i], prevTokenIsOperatorOrStart)) {
-                    tokens.add(operatorFactory);
-                    prevTokenIsOperatorOrStart = operatorFactory.nextTokenIsOperatorOrStart();
+            for (TokenFactory tokenFactory : tokenFactories) {
+                if (tokenFactory.support(chars, prevTokenIsOperatorOrStart)) {
+                    tokens.add(tokenFactory.getToken(chars));
+                    prevTokenIsOperatorOrStart = tokenFactory.nextTokenIsOperatorOrStart();
                     break;
                 }
             }
-            i++;
-        } while (i < chars.length);
+        } while (!chars.empty());
         return tokens;
+    }
+
+    private static Stack<Character> getCharacterStack(String expression) {
+        Stack<Character> stack = new Stack<>();
+        char[] chars = expression.toCharArray();
+        for (int i = chars.length - 1; i >= 0; i--) {
+            stack.push(chars[i]);
+        }
+        return stack;
     }
 
     private Expr toExpression(List<Token> tokens) {
@@ -79,19 +79,15 @@ public class MathEvaluator {
             if (token instanceof Number number) {
                 operands.push(number);
             } else if (token instanceof OperatorFactory operator) {
-                if (!operators.empty()) {
-                    if (operator.charOperator() == ')') {
-                        while (operators.peek().charOperator() != '(') {
-                            operands.push(operators.pop().getExpr(operands));
-                        }
-                        operators.pop();
-                    } else {
-                        if (operators.peek().precedence() >= operator.precedence() && operator.charOperator() != '(') {
-                            operands.push(operators.pop().getExpr(operands));
-                        }
-                        operators.push(operator);
+                if (operator.charOperator() == ')') {
+                    while (operators.peek().charOperator() != '(') {
+                        operands.push(operators.pop().getExpr(operands));
                     }
+                    operators.pop();
                 } else {
+                    if (!operators.empty() && operators.peek().precedence() >= operator.precedence() && operator.charOperator() != '(') {
+                        operands.push(operators.pop().getExpr(operands));
+                    }
                     operators.push(operator);
                 }
             }

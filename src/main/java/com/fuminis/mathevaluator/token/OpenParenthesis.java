@@ -1,4 +1,4 @@
-package com.fuminis.mathevaluator.operator;
+package com.fuminis.mathevaluator.token;
 
 import com.fuminis.mathevaluator.expr.Expr;
 
