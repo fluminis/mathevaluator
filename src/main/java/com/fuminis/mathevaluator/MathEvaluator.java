@@ -4,11 +4,11 @@ import com.fuminis.mathevaluator.expr.Expr;
 import com.fuminis.mathevaluator.token.Addition;
 import com.fuminis.mathevaluator.token.CloseParenthesis;
 import com.fuminis.mathevaluator.token.Division;
+import com.fuminis.mathevaluator.token.FunctionFactory;
 import com.fuminis.mathevaluator.token.Multiplication;
 import com.fuminis.mathevaluator.token.Negative;
 import com.fuminis.mathevaluator.token.NumberFactory;
 import com.fuminis.mathevaluator.token.OpenParenthesis;
-import com.fuminis.mathevaluator.token.OperatorFactory;
 import com.fuminis.mathevaluator.token.Pow;
 import com.fuminis.mathevaluator.token.Subtraction;
 import com.fuminis.mathevaluator.token.Token;
@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.util.function.Function;
 
 public class MathEvaluator {
 
@@ -35,6 +36,7 @@ public class MathEvaluator {
     );
 
     private VariableFactory variableFactory;
+    private FunctionFactory functionFactory;
     private final List<TokenFactory> tokenFactories;
 
     public MathEvaluator() {
@@ -47,6 +49,15 @@ public class MathEvaluator {
             tokenFactories.add(variableFactory);
         }
         variableFactory.setVariables(variables);
+        return this;
+    }
+
+    public MathEvaluator setFunctions(Map<String, Function<Stack<Expr>, Expr>> functions) {
+        if (functionFactory == null) {
+            functionFactory = new FunctionFactory();
+            tokenFactories.add(functionFactory);
+        }
+        functionFactory.setFunctions(functions);
         return this;
     }
 
@@ -87,7 +98,7 @@ public class MathEvaluator {
 
     private Expr toExpression(List<Token> tokens) {
         Stack<Expr> operands = new Stack<>();
-        Stack<OperatorFactory> operators = new Stack<>();
+        Stack<Token> operators = new Stack<>();
         for (Token token : tokens) {
             token.toExpression(operands, operators);
         }

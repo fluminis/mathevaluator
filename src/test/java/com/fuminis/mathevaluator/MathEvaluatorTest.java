@@ -80,6 +80,29 @@ class MathEvaluatorTest {
         assertThat(new MathEvaluator().setVariables(Map.of("x", 2.0)).calculate("1+(x^3)")).isEqualTo(9);
     }
 
+    @Test
+    void functions() {
+        assertThat(new MathEvaluator().setFunctions(Map.of("f", (operands) -> {
+            var operand = operands.pop();
+            return () -> operand.evaluate() * 2.0;
+        })).calculate("f(3)")).isEqualTo(6);
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "f(3)+1, 7",
+            "1+f(3), 7",
+            "f(2)+f(3), 10",
+            "f(f(3)), 12",
+            "f(f(3) / 2 + 1), 8"
+    })
+    void complexeFunctions(String expression, double expected) {
+        assertThat(new MathEvaluator().setFunctions(Map.of("f", (operands) -> {
+            var operand = operands.pop();
+            return () -> operand.evaluate() * 2.0;
+        })).calculate(expression)).isEqualTo(expected);
+    }
+
     @ParameterizedTest
     @CsvSource({
             "1-1, 0",
@@ -91,6 +114,7 @@ class MathEvaluatorTest {
             "1--1, 2",
             "-(2+3), -5",
             "(2+3)*(4-2), 10",
+            "((2+3)*(4-2)), 10",
             "6 + -(4), 2",
             "6 + -( -4), 10",
             "2 / (2 + 3.33), 0.37523452157598497",

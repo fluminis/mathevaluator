@@ -15,10 +15,13 @@ public class CloseParenthesis extends OperatorFactory {
     }
 
     @Override
-    public void toExpression(Stack<Expr> operands, Stack<OperatorFactory> operators) {
-        while (operators.peek().charOperator() != '(') {
+    public void toExpression(Stack<Expr> operands, Stack<Token> operators) {
+        while (!(operators.peek() instanceof OpenParenthesis)) {
             operands.push(operators.pop().getExpr(operands));
         }
-        operators.pop();
+        operators.pop(); // remove open parenthesis
+        if (!operators.isEmpty() && operators.peek() instanceof FunctionFactory.CustomFunction) {
+            operands.push(operators.pop().getExpr(operands));
+        }
     }
 }

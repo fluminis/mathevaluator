@@ -5,7 +5,7 @@ import com.fuminis.mathevaluator.expr.Expr;
 import java.util.Stack;
 import java.util.function.Function;
 
-public class OperatorFactory implements Token, TokenFactory {
+public abstract class OperatorFactory implements Token, TokenFactory {
     private final char charOperator;
     private final int precedence;
     private final boolean nextTokenIsOperatorOrStart;
@@ -21,7 +21,7 @@ public class OperatorFactory implements Token, TokenFactory {
     }
 
     @Override
-    public void toExpression(Stack<Expr> operands, Stack<OperatorFactory> operators) {
+    public void toExpression(Stack<Expr> operands, Stack<Token> operators) {
         if (!operators.empty() && operators.peek().precedence() >= this.precedence()) {
             operands.push(operators.pop().getExpr(operands));
         }
@@ -34,7 +34,7 @@ public class OperatorFactory implements Token, TokenFactory {
 
     @Override
     public String toString() {
-        return charOperator + "(" + precedence + ")";
+        return getClass().getSimpleName() + "[char=" + charOperator + ", precedence=" + precedence + "]";
     }
 
     public boolean support(Stack<Character> chars, boolean prevTokenIsOperatorOrStart) {

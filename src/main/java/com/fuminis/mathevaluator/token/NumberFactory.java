@@ -1,5 +1,7 @@
 package com.fuminis.mathevaluator.token;
 
+import com.fuminis.mathevaluator.expr.Expr;
+
 import java.util.Stack;
 
 public class NumberFactory implements TokenFactory {
@@ -15,12 +17,22 @@ public class NumberFactory implements TokenFactory {
             currentToken += chars.pop();
         } while (!chars.empty() && (Character.isDigit(chars.peek()) || chars.peek() == '.'));
         double number = Double.parseDouble(currentToken);
-        return (operands, operators) -> {
-            operands.push(() -> number);
-        };
+        return new Number(number);
     }
 
     public boolean nextTokenIsOperatorOrStart() {
         return false;
+    }
+
+    record Number(double evaluate) implements Expr, Token {
+        @Override
+        public Expr getExpr(Stack<Expr> operands) {
+            return null;
+        }
+
+        @Override
+        public void toExpression(Stack<Expr> operands, Stack<Token> operators) {
+            operands.push(this);
+        }
     }
 }
