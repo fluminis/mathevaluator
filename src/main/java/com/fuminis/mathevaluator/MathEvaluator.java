@@ -52,7 +52,7 @@ public class MathEvaluator {
         return this;
     }
 
-    public MathEvaluator setFunctions(Map<String, Function<Stack<Expr>, Expr>> functions) {
+    public MathEvaluator setFunctions(Map<String, Function<Double, Double>> functions) {
         if (functionFactory == null) {
             functionFactory = new FunctionFactory();
             tokenFactories.add(functionFactory);

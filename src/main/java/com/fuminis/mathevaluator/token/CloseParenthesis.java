@@ -20,8 +20,5 @@ public class CloseParenthesis extends OperatorFactory {
             operands.push(operators.pop().getExpr(operands));
         }
         operators.pop(); // remove open parenthesis
-        if (!operators.isEmpty() && operators.peek() instanceof FunctionFactory.CustomFunction) {
-            operands.push(operators.pop().getExpr(operands));
-        }
     }
 }

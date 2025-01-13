@@ -8,7 +8,7 @@ import java.util.function.Function;
 
 public class FunctionFactory implements TokenFactory {
 
-    private Map<String, Function<Stack<Expr>, Expr>> functions;
+    private Map<String, Function<Double, Double>> functions;
 
     @Override
     public boolean support(Stack<Character> chars, boolean prevTokenIsOperatorOrStart) {
@@ -35,11 +35,11 @@ public class FunctionFactory implements TokenFactory {
         return true;
     }
 
-    public void setFunctions(Map<String, Function<Stack<Expr>, Expr>> variables) {
-        this.functions = variables;
+    public void setFunctions(Map<String, Function<Double, Double>> functions) {
+        this.functions = functions;
     }
 
-    record CustomFunction(Function<Stack<Expr>, Expr> func) implements Token, Expr {
+    record CustomFunction(Function<Double, Double> func) implements Token {
 
         @Override
         public int precedence() {
@@ -48,17 +48,13 @@ public class FunctionFactory implements TokenFactory {
 
         @Override
         public Expr getExpr(Stack<Expr> operands) {
-            return func.apply(operands);
+            var operand = operands.pop();
+            return () -> func.apply(operand.evaluate());
         }
 
         @Override
         public void toExpression(Stack<Expr> operands, Stack<Token> operators) {
             operators.push(this);
-        }
-
-        @Override
-        public double evaluate() {
-            return 0;
         }
     }
 }

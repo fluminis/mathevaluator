@@ -82,10 +82,7 @@ class MathEvaluatorTest {
 
     @Test
     void functions() {
-        assertThat(new MathEvaluator().setFunctions(Map.of("f", (operands) -> {
-            var operand = operands.pop();
-            return () -> operand.evaluate() * 2.0;
-        })).calculate("f(3)")).isEqualTo(6);
+        assertThat(new MathEvaluator().setFunctions(Map.of("f", d -> d * 2.0)).calculate("f(3)")).isEqualTo(6);
     }
 
     @ParameterizedTest
@@ -97,10 +94,10 @@ class MathEvaluatorTest {
             "f(f(3) / 2 + 1), 8"
     })
     void complexeFunctions(String expression, double expected) {
-        assertThat(new MathEvaluator().setFunctions(Map.of("f", (operands) -> {
-            var operand = operands.pop();
-            return () -> operand.evaluate() * 2.0;
-        })).calculate(expression)).isEqualTo(expected);
+        assertThat(new MathEvaluator().setFunctions(Map.of(
+                "f", d -> d * 2.0,
+                "sin", Math::sin
+        )).calculate(expression)).isEqualTo(expected);
     }
 
     @ParameterizedTest
