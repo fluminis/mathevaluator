@@ -4,11 +4,10 @@ import com.fuminis.mathevaluator.expr.Expr;
 
 import java.util.Map;
 import java.util.Stack;
-import java.util.function.Function;
 
 public class FunctionFactory implements TokenFactory {
 
-    private Map<String, Function<Double, Double>> functions;
+    private Map<String, IMathFunction> functions;
 
     @Override
     public boolean support(Stack<Character> chars, boolean prevTokenIsOperatorOrStart) {
@@ -28,33 +27,45 @@ public class FunctionFactory implements TokenFactory {
             currentToken += chars.pop();
         } while (!chars.empty() && (Character.isAlphabetic(chars.peek()) || Character.isDigit(chars.peek()) || chars.peek() == '_'));
         String funcName = currentToken;
-        return new CustomFunction(functions.get(funcName));
+        return functions.get(funcName);
     }
 
     public boolean nextTokenIsOperatorOrStart() {
         return true;
     }
 
-    public void setFunctions(Map<String, Function<Double, Double>> functions) {
+    public void setFunctions(Map<String, IMathFunction> functions) {
         this.functions = functions;
     }
 
-    record CustomFunction(Function<Double, Double> func) implements Token {
-
-        @Override
-        public int precedence() {
+    public interface IMathFunction extends Token {
+        default int precedence() {
             return 5;
         }
 
-        @Override
-        public Expr getExpr(Stack<Expr> operands) {
-            var operand = operands.pop();
-            return () -> func.apply(operand.evaluate());
-        }
+        Expr getExpr(Stack<Expr> operands);
 
-        @Override
-        public void toExpression(Stack<Expr> operands, Stack<Token> operators) {
+        default void toExpression(Stack<Expr> operands, Stack<Token> operators) {
             operators.push(this);
         }
+    }
+
+    public interface MathFunction extends IMathFunction {
+        default Expr getExpr(Stack<Expr> operands) {
+            var operand = operands.pop();
+            return () -> apply(operand.evaluate());
+        }
+
+        double apply(double operand);
+    }
+
+    public interface BiMathFunction extends IMathFunction {
+        default Expr getExpr(Stack<Expr> operands) {
+            var right = operands.pop();
+            var left = operands.pop();
+            return () -> apply(left.evaluate(), right.evaluate());
+        }
+
+        double apply(double left, double right);
     }
 }

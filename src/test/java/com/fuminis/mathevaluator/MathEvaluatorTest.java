@@ -1,5 +1,8 @@
 package com.fuminis.mathevaluator;
 
+import com.fuminis.mathevaluator.token.FunctionFactory.BiMathFunction;
+import com.fuminis.mathevaluator.token.FunctionFactory.MathFunction;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -82,21 +85,28 @@ class MathEvaluatorTest {
 
     @Test
     void functions() {
-        assertThat(new MathEvaluator().setFunctions(Map.of("f", d -> d * 2.0)).calculate("f(3)")).isEqualTo(6);
+        assertThat(new MathEvaluator().setFunctions(Map.of("f", (MathFunction) d -> d * 2.0)).calculate("f(3)")).isEqualTo(6);
+    }
+
+    @Test
+    void biFunctions() {
+        assertThat(new MathEvaluator().setFunctions(Map.of("f", (BiMathFunction) Double::sum)).calculate("f(1, 3)")).isEqualTo(4);
     }
 
     @ParameterizedTest
-    @CsvSource({
-            "f(3)+1, 7",
-            "1+f(3), 7",
-            "f(2)+f(3), 10",
-            "f(f(3)), 12",
-            "f(f(3) / 2 + 1), 8"
-    })
+    @CsvSource(value = {
+            "f(3)+1; 7",
+            "1+f(3); 7",
+            "f(2)+f(3); 10",
+            "f(f(3)); 12",
+            "f(f(3) / 2 + 1); 8",
+            "g(f(2), f(3) + g(1, 2)); 13"
+    }, delimiter = ';')
     void complexeFunctions(String expression, double expected) {
         assertThat(new MathEvaluator().setFunctions(Map.of(
-                "f", d -> d * 2.0,
-                "sin", Math::sin
+                "f", (MathFunction) d -> d * 2.0,
+                "sin", (MathFunction) Math::sin,
+                "g", (BiMathFunction) Double::sum
         )).calculate(expression)).isEqualTo(expected);
     }
 

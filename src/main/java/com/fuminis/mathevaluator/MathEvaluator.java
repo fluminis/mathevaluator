@@ -3,8 +3,10 @@ package com.fuminis.mathevaluator;
 import com.fuminis.mathevaluator.expr.Expr;
 import com.fuminis.mathevaluator.token.Addition;
 import com.fuminis.mathevaluator.token.CloseParenthesis;
+import com.fuminis.mathevaluator.token.Coma;
 import com.fuminis.mathevaluator.token.Division;
 import com.fuminis.mathevaluator.token.FunctionFactory;
+import com.fuminis.mathevaluator.token.FunctionFactory.IMathFunction;
 import com.fuminis.mathevaluator.token.Multiplication;
 import com.fuminis.mathevaluator.token.Negative;
 import com.fuminis.mathevaluator.token.NumberFactory;
@@ -19,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
-import java.util.function.Function;
 
 public class MathEvaluator {
 
@@ -32,7 +33,8 @@ public class MathEvaluator {
             new Division(),
             new Pow(),
             new OpenParenthesis(),
-            new CloseParenthesis()
+            new CloseParenthesis(),
+            new Coma()
     );
 
     private VariableFactory variableFactory;
@@ -52,7 +54,7 @@ public class MathEvaluator {
         return this;
     }
 
-    public MathEvaluator setFunctions(Map<String, Function<Double, Double>> functions) {
+    public MathEvaluator setFunctions(Map<String, IMathFunction> functions) {
         if (functionFactory == null) {
             functionFactory = new FunctionFactory();
             tokenFactories.add(functionFactory);
