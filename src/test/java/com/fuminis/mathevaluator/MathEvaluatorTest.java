@@ -10,87 +10,88 @@ import org.junit.jupiter.params.provider.CsvSource;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class MathEvaluatorTest {
 
     @Test
     void number() {
-        assertThat(new MathEvaluator().calculate("123456")).isEqualTo(123456);
+        assertThat(MathEvaluator.of("123456").calculate()).isEqualTo(123456);
     }
 
     @Test
     void negativeNumber() {
-        assertThat(new MathEvaluator().calculate("-123456")).isEqualTo(-123456);
+        assertThat(MathEvaluator.of("-123456").calculate()).isEqualTo(-123456);
     }
 
     @Test
     void decimalNumber() {
-        assertThat(new MathEvaluator().calculate("1234.56")).isEqualTo(1234.56);
+        assertThat(MathEvaluator.of("1234.56").calculate()).isEqualTo(1234.56);
     }
 
     @Test
     void negativeDecimalNumber() {
-        assertThat(new MathEvaluator().calculate("-123.456")).isEqualTo(-123.456);
+        assertThat(MathEvaluator.of("-123.456").calculate()).isEqualTo(-123.456);
     }
 
     @Test
     void addition() {
-        assertThat(new MathEvaluator().calculate("1+2")).isEqualTo(3);
+        assertThat(MathEvaluator.of("1+2").calculate()).isEqualTo(3);
     }
 
     @Test
     void subtraction() {
-        assertThat(new MathEvaluator().calculate("3- 1")).isEqualTo(2);
+        assertThat(MathEvaluator.of("3- 1").calculate()).isEqualTo(2);
     }
 
     @Test
     void multiplication() {
-        assertThat(new MathEvaluator().calculate("2*3")).isEqualTo(6);
+        assertThat(MathEvaluator.of("2*3").calculate()).isEqualTo(6);
     }
 
     @Test
     void division() {
-        assertThat(new MathEvaluator().calculate("4/2")).isEqualTo(2);
+        assertThat(MathEvaluator.of("4/2").calculate()).isEqualTo(2);
     }
 
     @Test
     void parenthesis() {
-        assertThat(new MathEvaluator().calculate("(2+3)")).isEqualTo(5);
+        assertThat(MathEvaluator.of("(2+3)").calculate()).isEqualTo(5);
     }
 
     @Test
     void complexParenthesis() {
-        assertThat(new MathEvaluator().calculate("(2*(3+1))")).isEqualTo(8);
+        assertThat(MathEvaluator.of("(2*(3+1))").calculate()).isEqualTo(8);
     }
 
     @Test
     void pow() {
-        assertThat(new MathEvaluator().calculate("2^3")).isEqualTo(8);
+        assertThat(MathEvaluator.of("2^3").calculate()).isEqualTo(8);
     }
 
     @Test
     void precedenceMultiplicationOverAddition() {
-        assertThat(new MathEvaluator().calculate("1+2*3")).isEqualTo(7);
-        assertThat(new MathEvaluator().calculate("2*3+1")).isEqualTo(7);
-        assertThat(new MathEvaluator().calculate("1+2*3+1")).isEqualTo(8);
-        assertThat(new MathEvaluator().calculate("1*2+3*1")).isEqualTo(5);
+        assertThat(MathEvaluator.of("1+2*3").calculate()).isEqualTo(7);
+        assertThat(MathEvaluator.of("2*3+1").calculate()).isEqualTo(7);
+        assertThat(MathEvaluator.of("1+2*3+1").calculate()).isEqualTo(8);
+        assertThat(MathEvaluator.of("1*2+3*1").calculate()).isEqualTo(5);
     }
 
     @Test
     void variables() {
-        assertThat(new MathEvaluator().setVariables(Map.of("x", 2.0)).calculate("1+x*3")).isEqualTo(7);
-        assertThat(new MathEvaluator().setVariables(Map.of("x", 3.0)).calculate("1+x*3")).isEqualTo(10);
-        assertThat(new MathEvaluator().setVariables(Map.of("x", 2.0)).calculate("1+(x^3)")).isEqualTo(9);
+        assertThat(MathEvaluator.of("1+x*3").setVariables(Map.of("x", 2.0)).calculate()).isEqualTo(7);
+        assertThat(MathEvaluator.of("1+x*3").setVariables(Map.of("x", 3.0)).calculate()).isEqualTo(10);
+        assertThat(MathEvaluator.of("1+(x^3)").setVariables(Map.of("x", 2.0)).calculate()).isEqualTo(9);
     }
 
     @Test
     void functions() {
-        assertThat(new MathEvaluator().setFunctions(Map.of("f", (MathFunction) d -> d * 2.0)).calculate("f(3)")).isEqualTo(6);
+        assertThat(MathEvaluator.of("f(3)").setFunctions(Map.of("f", (MathFunction) d -> d * 2.0)).calculate()).isEqualTo(6);
     }
 
     @Test
     void biFunctions() {
-        assertThat(new MathEvaluator().setFunctions(Map.of("f", (BiMathFunction) Double::sum)).calculate("f(1, 3)")).isEqualTo(4);
+        assertThat(MathEvaluator.of("f(1, 1+2)").setFunctions(Map.of("f", (BiMathFunction) Double::sum)).calculate()).isEqualTo(4);
     }
 
     @ParameterizedTest
@@ -103,11 +104,11 @@ class MathEvaluatorTest {
             "g(f(2), f(3) + g(1, 2)); 13"
     }, delimiter = ';')
     void complexeFunctions(String expression, double expected) {
-        assertThat(new MathEvaluator().setFunctions(Map.of(
+        assertThat(MathEvaluator.of(expression).setFunctions(Map.of(
                 "f", (MathFunction) d -> d * 2.0,
                 "sin", (MathFunction) Math::sin,
                 "g", (BiMathFunction) Double::sum
-        )).calculate(expression)).isEqualTo(expected);
+        )).calculate()).isEqualTo(expected);
     }
 
     @ParameterizedTest
@@ -131,6 +132,26 @@ class MathEvaluatorTest {
             "2+2^3+1, 11"
     })
     void testSuite(String expression, double expected) {
-        assertThat(new MathEvaluator().calculate(expression)).isEqualTo(expected);
+        assertThat(MathEvaluator.of(expression).calculate()).isEqualTo(expected);
+    }
+
+    @Test
+    void shouldCalculateMultipleTimes() {
+        var math = MathEvaluator.of("1+x*3").setVariables(Map.of("x", 3.0));
+        assertThat(math.calculate()).isEqualTo(10);
+        assertThat(math.setVariables(Map.of("x", 2.0)).calculate()).isEqualTo(7);
+        assertThat(math.addVariable("x", 3.0).calculate()).isEqualTo(10);
+    }
+
+    @Test
+    void functionNotDefined() {
+        var math = MathEvaluator.of("1+f(3)").setFunctions(Map.of("x", (MathFunction) (d  -> d * 3.0)));
+        assertThatThrownBy(math::calculate).isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
+    void variableNotDefined() {
+        var math = MathEvaluator.of("1+x");
+        assertThatThrownBy(math::calculate).isInstanceOf(IllegalStateException.class);
     }
 }

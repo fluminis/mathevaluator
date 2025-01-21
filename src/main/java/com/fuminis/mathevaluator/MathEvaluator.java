@@ -24,7 +24,11 @@ import java.util.Stack;
 
 public class MathEvaluator {
 
-    private static List<TokenFactory> DEFAULT_FACTORIES = List.of(
+    public static MathEvaluator of(final String expression) {
+        return new MathEvaluator(expression);
+    }
+
+    private static final List<TokenFactory> DEFAULT_FACTORIES = List.of(
             new NumberFactory(),
             new Addition(),
             new Subtraction(),
@@ -37,35 +41,45 @@ public class MathEvaluator {
             new Coma()
     );
 
-    private VariableFactory variableFactory;
-    private FunctionFactory functionFactory;
+    private final VariableFactory variableFactory;
+    private final FunctionFactory functionFactory;
     private final List<TokenFactory> tokenFactories;
+    private final String expression;
+    private Expr expr;
 
-    public MathEvaluator() {
+    private MathEvaluator(String expression) {
+        this.expression = expression;
+        this.variableFactory = new VariableFactory();
+        this.functionFactory = new FunctionFactory();
+
         this.tokenFactories = new ArrayList<>(DEFAULT_FACTORIES);
+        tokenFactories.add(variableFactory);
+        tokenFactories.add(functionFactory);
     }
 
     public MathEvaluator setVariables(Map<String, Double> variables) {
-        if (variableFactory == null) {
-            variableFactory = new VariableFactory();
-            tokenFactories.add(variableFactory);
-        }
         variableFactory.setVariables(variables);
         return this;
     }
 
+    public MathEvaluator addVariable(String varName, double value) {
+        variableFactory.addVariable(varName, value);
+        return this;
+    }
+
     public MathEvaluator setFunctions(Map<String, IMathFunction> functions) {
-        if (functionFactory == null) {
-            functionFactory = new FunctionFactory();
-            tokenFactories.add(functionFactory);
-        }
         functionFactory.setFunctions(functions);
         return this;
     }
 
-    public double calculate(String expression) {
-        List<Token> tokens = tokenize(expression);
-        Expr expr = toExpression(tokens);
+    private void compile() {
+        if (expr == null) {
+            this.expr = toExpression(tokenize(this.expression));
+        }
+    }
+
+    public double calculate() {
+        compile();
         return expr.evaluate();
     }
 
