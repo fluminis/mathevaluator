@@ -1,6 +1,5 @@
 package com.fuminis.mathevaluator;
 
-import com.fuminis.mathevaluator.token.FunctionFactory.BiMathFunction;
 import com.fuminis.mathevaluator.token.FunctionFactory.MathFunction;
 
 import org.junit.jupiter.api.Test;
@@ -85,13 +84,18 @@ class MathEvaluatorTest {
     }
 
     @Test
-    void functions() {
-        assertThat(MathEvaluator.of("f(3)").setFunctions(Map.of("f", (MathFunction) d -> d * 2.0)).calculate()).isEqualTo(6);
+    void function1() {
+        assertThat(MathEvaluator.of("f(3)").setFunctions(Map.of("f", MathFunction.mathFunction(d -> d * 2.0))).calculate()).isEqualTo(6);
     }
 
     @Test
-    void biFunctions() {
-        assertThat(MathEvaluator.of("f(1, 1+2)").setFunctions(Map.of("f", (BiMathFunction) Double::sum)).calculate()).isEqualTo(4);
+    void function2() {
+        assertThat(MathEvaluator.of("f(1, 1+2)").setFunctions(Map.of("f", MathFunction.mathFunction(Double::sum))).calculate()).isEqualTo(4);
+    }
+
+    @Test
+    void function3() {
+        assertThat(MathEvaluator.of("f(1, 2, 3)").addFunction("f", MathFunction.mathFunction(3, d -> d[0] + 2 * d[1] + 3 * d[2])).calculate()).isEqualTo(14);
     }
 
     @ParameterizedTest
@@ -105,9 +109,9 @@ class MathEvaluatorTest {
     }, delimiter = ';')
     void complexeFunctions(String expression, double expected) {
         assertThat(MathEvaluator.of(expression).setFunctions(Map.of(
-                "f", (MathFunction) d -> d * 2.0,
-                "sin", (MathFunction) Math::sin,
-                "g", (BiMathFunction) Double::sum
+                "f", MathFunction.mathFunction(d -> d * 2.0),
+                "sin", MathFunction.mathFunction(Math::sin),
+                "g", MathFunction.mathFunction(Double::sum)
         )).calculate()).isEqualTo(expected);
     }
 
@@ -145,7 +149,7 @@ class MathEvaluatorTest {
 
     @Test
     void functionNotDefined() {
-        var math = MathEvaluator.of("1+f(3)").setFunctions(Map.of("x", (MathFunction) (d  -> d * 3.0)));
+        var math = MathEvaluator.of("1+f(3)").setFunctions(Map.of("x", MathFunction.mathFunction(d  -> d * 3.0)));
         assertThatThrownBy(math::calculate).isInstanceOf(IllegalStateException.class);
     }
 

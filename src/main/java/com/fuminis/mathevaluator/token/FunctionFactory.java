@@ -3,6 +3,7 @@ package com.fuminis.mathevaluator.token;
 import com.fuminis.mathevaluator.expr.Expr;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -10,7 +11,7 @@ import java.util.function.Function;
 
 public class FunctionFactory implements TokenFactory {
 
-    private Map<String, IMathFunction> functions;
+    private final Map<String, MathFunction> functions = new HashMap<>();
 
     @Override
     public boolean support(Stack<Character> chars, boolean prevTokenIsOperatorOrStart) {
@@ -36,8 +37,13 @@ public class FunctionFactory implements TokenFactory {
         return true;
     }
 
-    public void setFunctions(Map<String, IMathFunction> functions) {
-        this.functions = functions;
+    public void setFunctions(Map<String, MathFunction> functions) {
+        this.functions.clear();
+        this.functions.putAll(functions);
+    }
+
+    public void addFunction(String funcName, MathFunction func) {
+        this.functions.put(funcName, func);
     }
 
     record FunctionToken(FunctionFactory functionFactory, String funcName) implements Token {
@@ -47,7 +53,7 @@ public class FunctionFactory implements TokenFactory {
 
         @Override
         public Expr getExpr(Stack<Expr> operands) {
-            IMathFunction func = functionFactory.functions.get(funcName);
+            MathFunction func = functionFactory.functions.get(funcName);
             if (func == null) {
                 throw new IllegalStateException("Function '" + funcName + "' not found");
             }
@@ -60,21 +66,36 @@ public class FunctionFactory implements TokenFactory {
         }
     }
 
-    public interface IMathFunction {
-        Expr getExpr(Stack<Expr> operands);
-    }
+    public static class MathFunction {
 
-    public class MathFunction2 implements IMathFunction {
+        public interface Function1 { double apply(double a);}
+        public interface Function2 { double apply(double a, double b);}
+        public interface Function3 { double apply(double a, double b, double c);}
+
+        public static MathFunction mathFunction(int nbArgs, Function<Double[], Double> funct) {
+            return new MathFunction(nbArgs, funct);
+        }
+
+        public static MathFunction mathFunction(Function1 funct) {
+            return new MathFunction(1, array -> funct.apply(array[0]));
+        }
+
+        public static MathFunction mathFunction(Function2 funct) {
+            return new MathFunction(2, array -> funct.apply(array[0], array[1]));
+        }
+
+        public static MathFunction mathFunction(Function3 funct) {
+            return new MathFunction(3, array -> funct.apply(array[0], array[1], array[2]));
+        }
 
         private final int nbArgs;
         private final Function<Double[], Double> funct;
 
-        public MathFunction2(int nbArgs, Function<Double[], Double> funct) {
+        private MathFunction(int nbArgs, Function<Double[], Double> funct) {
             this.nbArgs = nbArgs;
             this.funct = funct;
         }
 
-        @Override
         public Expr getExpr(Stack<Expr> operands) {
             List<Expr> exprs = new ArrayList<>(nbArgs);
             for (int i = 0; i < nbArgs; i++) {
@@ -85,24 +106,5 @@ public class FunctionFactory implements TokenFactory {
                 return funct.apply(args);
             };
         }
-    }
-
-    public interface MathFunction extends IMathFunction {
-        default Expr getExpr(Stack<Expr> operands) {
-            var operand = operands.pop();
-            return () -> apply(operand.evaluate());
-        }
-
-        double apply(double operand);
-    }
-
-    public interface BiMathFunction extends IMathFunction {
-        default Expr getExpr(Stack<Expr> operands) {
-            var right = operands.pop();
-            var left = operands.pop();
-            return () -> apply(left.evaluate(), right.evaluate());
-        }
-
-        double apply(double left, double right);
     }
 }

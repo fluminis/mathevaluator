@@ -6,7 +6,6 @@ import com.fuminis.mathevaluator.token.CloseParenthesis;
 import com.fuminis.mathevaluator.token.Coma;
 import com.fuminis.mathevaluator.token.Division;
 import com.fuminis.mathevaluator.token.FunctionFactory;
-import com.fuminis.mathevaluator.token.FunctionFactory.IMathFunction;
 import com.fuminis.mathevaluator.token.Multiplication;
 import com.fuminis.mathevaluator.token.Negative;
 import com.fuminis.mathevaluator.token.NumberFactory;
@@ -67,8 +66,13 @@ public class MathEvaluator {
         return this;
     }
 
-    public MathEvaluator setFunctions(Map<String, IMathFunction> functions) {
+    public MathEvaluator setFunctions(Map<String, FunctionFactory.MathFunction> functions) {
         functionFactory.setFunctions(functions);
+        return this;
+    }
+
+    public MathEvaluator addFunction(String funcName, FunctionFactory.MathFunction func) {
+        functionFactory.addFunction(funcName, func);
         return this;
     }
 
@@ -92,12 +96,17 @@ public class MathEvaluator {
                 chars.pop();
                 continue;
             }
+            boolean handled = false;
             for (TokenFactory tokenFactory : tokenFactories) {
                 if (tokenFactory.support(chars, prevTokenIsOperatorOrStart)) {
+                    handled = true;
                     tokens.add(tokenFactory.getToken(chars));
                     prevTokenIsOperatorOrStart = tokenFactory.nextTokenIsOperatorOrStart();
                     break;
                 }
+            }
+            if (!handled) {
+                throw new IllegalStateException("Illegal token: " + chars.peek());
             }
         } while (!chars.empty());
         return tokens;
