@@ -1,12 +1,13 @@
 package com.fuminis.mathevaluator.token;
 
+import com.fuminis.mathevaluator.MathEvaluationException;
 import com.fuminis.mathevaluator.expr.Expr;
 
 import java.util.Stack;
 
 public class CloseParenthesis extends OperatorFactory {
     public CloseParenthesis() {
-        super(')', 4, false, false, null);
+        super(')', 4, false, false, 2);
     }
 
     @Override
@@ -16,9 +17,13 @@ public class CloseParenthesis extends OperatorFactory {
 
     @Override
     public void toExpression(Stack<Expr> operands, Stack<Token> operators) {
-        while (!(operators.peek() instanceof OpenParenthesis)) {
-            operands.push(operators.pop().getExpr(operands));
+        while (!operators.empty() && !(operators.peek() instanceof OpenParenthesis)) {
+            Token.getExpr(operands, operators);
+        }
+        if (operators.empty() || !(operators.peek() instanceof OpenParenthesis)) {
+            throw new MathEvaluationException("a close parenthesis does not have corresponding open parenthesis");
         }
         operators.pop(); // remove open parenthesis
+
     }
 }

@@ -106,7 +106,7 @@ public class MathEvaluator {
                 }
             }
             if (!handled) {
-                throw new IllegalStateException("Illegal token: " + chars.peek());
+                throw new MathEvaluationException("Illegal token: " + chars.peek() + System.lineSeparator() + formatError(expression, chars.size()));
             }
         } while (!chars.empty());
         return tokens;
@@ -128,9 +128,12 @@ public class MathEvaluator {
             token.toExpression(operands, operators);
         }
         while (!operators.empty()) {
-            operands.push(operators.pop().getExpr(operands));
+            Token.getExpr(operands, operators);
         }
         return operands.pop();
     }
 
+    private String formatError(String expression, int position) {
+        return expression + System.lineSeparator() + " ".repeat(expression.length() - position) + "^";
+    }
 }

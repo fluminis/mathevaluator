@@ -133,7 +133,8 @@ class MathEvaluatorTest {
             "2 / (2 + 3.33) * 4, 1.5009380863039399",
             "(2 / (2 + 3.33) * 4) - -6, 7.50093808630394",
             "-(-(2))+-2, 0",
-            "2+2^3+1, 11"
+            "2+2^3+1, 11",
+            "7 - 4 + 2, 5"
     })
     void testSuite(String expression, double expected) {
         assertThat(MathEvaluator.of(expression).calculate()).isEqualTo(expected);
@@ -150,12 +151,42 @@ class MathEvaluatorTest {
     @Test
     void functionNotDefined() {
         var math = MathEvaluator.of("1+f(3)").setFunctions(Map.of("x", MathFunction.mathFunction(d  -> d * 3.0)));
-        assertThatThrownBy(math::calculate).isInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(math::calculate).isInstanceOf(MathEvaluationException.class);
     }
 
     @Test
     void variableNotDefined() {
         var math = MathEvaluator.of("1+x");
-        assertThatThrownBy(math::calculate).isInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(math::calculate).isInstanceOf(MathEvaluationException.class);
+    }
+
+    @Test
+    void notProperlyFormed() {
+        var math = MathEvaluator.of("1+*3+(1)");
+        assertThatThrownBy(math::calculate).isInstanceOf(MathEvaluationException.class)
+                .hasMessage("Illegal token: *" + System.lineSeparator() +
+                            "1+*3+(1)" + System.lineSeparator() +
+                            "  ^");
+    }
+
+    @Test
+    void notProperlyFormed2() {
+        var math = MathEvaluator.of("1+3)+(1)");
+        assertThatThrownBy(math::calculate).isInstanceOf(MathEvaluationException.class)
+                .hasMessage("a close parenthesis does not have corresponding open parenthesis");
+    }
+
+    @Test
+    void notProperlyFormed3() {
+        var math = MathEvaluator.of("1+");
+        assertThatThrownBy(math::calculate).isInstanceOf(MathEvaluationException.class)
+                .hasMessage("wrong number of operands for Addition[char=+]");
+    }
+
+    @Test
+    void notProperlyFormed4() {
+        var math = MathEvaluator.of("(1+3+(1)");
+        assertThatThrownBy(math::calculate).isInstanceOf(MathEvaluationException.class)
+                .hasMessage("wrong number of operands for OpenParenthesis[char=(]");
     }
 }

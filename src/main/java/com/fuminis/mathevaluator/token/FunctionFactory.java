@@ -1,5 +1,6 @@
 package com.fuminis.mathevaluator.token;
 
+import com.fuminis.mathevaluator.MathEvaluationException;
 import com.fuminis.mathevaluator.expr.Expr;
 
 import java.util.ArrayList;
@@ -53,16 +54,25 @@ public class FunctionFactory implements TokenFactory {
 
         @Override
         public Expr getExpr(Stack<Expr> operands) {
+            return mathFunction().getExpr(operands);
+        }
+
+        private MathFunction mathFunction() {
             MathFunction func = functionFactory.functions.get(funcName);
             if (func == null) {
-                throw new IllegalStateException("Function '" + funcName + "' not found");
+                throw new MathEvaluationException("Function '" + funcName + "' not found");
             }
-            return func.getExpr(operands);
+            return func;
         }
 
         @Override
         public void toExpression(Stack<Expr> operands, Stack<Token> operators) {
             operators.push(this);
+        }
+
+        @Override
+        public int nbOperands() {
+            return mathFunction().nbArgs;
         }
     }
 

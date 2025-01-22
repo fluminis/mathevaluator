@@ -6,7 +6,7 @@ import java.util.Stack;
 
 public class OpenParenthesis extends OperatorFactory {
     public OpenParenthesis() {
-        super('(', -1, true, true, null);
+        super('(', -1, true, true, 2);
     }
 
     @Override

@@ -6,7 +6,7 @@ import java.util.Stack;
 
 public class Division extends OperatorFactory {
     public Division() {
-        super('/', 2, true, false, null);
+        super('/', 2, true, false, 2);
     }
 
     @Override

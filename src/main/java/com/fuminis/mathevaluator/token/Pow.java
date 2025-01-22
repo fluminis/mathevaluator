@@ -6,7 +6,7 @@ import java.util.Stack;
 
 public class Pow extends OperatorFactory {
     public Pow() {
-        super('^', 3, true, false, null);
+        super('^', 3, true, false, 2);
     }
 
     @Override

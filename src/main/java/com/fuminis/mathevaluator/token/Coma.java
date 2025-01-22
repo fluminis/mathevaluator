@@ -6,7 +6,7 @@ import java.util.Stack;
 
 public class Coma extends OperatorFactory {
     public Coma() {
-        super(',', 4, false, false, null);
+        super(',', 4, false, false, 2);
     }
 
     @Override
@@ -16,8 +16,8 @@ public class Coma extends OperatorFactory {
 
     @Override
     public void toExpression(Stack<Expr> operands, Stack<Token> operators) {
-        while (!(operators.peek() instanceof OpenParenthesis)) {
-            operands.push(operators.pop().getExpr(operands));
+        while (!operators.empty() && !(operators.peek() instanceof OpenParenthesis)) {
+            Token.getExpr(operands, operators);
         }
         // do not remove open parenthesis
     }

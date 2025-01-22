@@ -6,7 +6,7 @@ import java.util.Stack;
 
 public class Negative extends OperatorFactory {
     public Negative() {
-        super('-', 5, true, true, null);
+        super('-', 5, true, true, 1);
     }
 
     @Override

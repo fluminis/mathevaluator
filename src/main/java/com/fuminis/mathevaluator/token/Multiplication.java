@@ -6,7 +6,7 @@ import java.util.Stack;
 
 public class Multiplication extends OperatorFactory {
     public Multiplication() {
-        super('*', 2, true, false, null);
+        super('*', 2, true, false, 2);
     }
 
     @Override

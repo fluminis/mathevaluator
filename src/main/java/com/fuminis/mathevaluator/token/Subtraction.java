@@ -6,7 +6,7 @@ import java.util.Stack;
 
 public class Subtraction extends OperatorFactory {
     public Subtraction() {
-        super('-', 1, true, false, null);
+        super('-', 1, true, false, 2);
     }
 
     @Override

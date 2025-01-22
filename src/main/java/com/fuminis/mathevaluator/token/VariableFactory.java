@@ -1,5 +1,6 @@
 package com.fuminis.mathevaluator.token;
 
+import com.fuminis.mathevaluator.MathEvaluationException;
 import com.fuminis.mathevaluator.expr.Expr;
 
 import java.util.HashMap;
@@ -49,7 +50,7 @@ public class VariableFactory implements TokenFactory {
         public double evaluate() {
             Double variable = variableFactory.variables.get(varName);
             if (variable == null) {
-                throw new IllegalStateException("Variable '" + varName + "' not found");
+                throw new MathEvaluationException("Variable '" + varName + "' not found");
             }
             return variable;
         }

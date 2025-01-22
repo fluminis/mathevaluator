@@ -3,38 +3,33 @@ package com.fuminis.mathevaluator.token;
 import com.fuminis.mathevaluator.expr.Expr;
 
 import java.util.Stack;
-import java.util.function.Function;
 
 public abstract class OperatorFactory implements Token, TokenFactory {
     private final char charOperator;
     private final int precedence;
     private final boolean nextTokenIsOperatorOrStart;
     private final boolean prevTokenIsOperatorOrStart;
-    private final Function<Stack<Expr>, Expr> generator;
+    private final int nbOperands;
 
-    public OperatorFactory(char charOperator, int precedence, boolean nextTokenIsOperatorOrStart, boolean prevTokenIsOperatorOrStart, Function<Stack<Expr>, Expr> generator) {
+    public OperatorFactory(char charOperator, int precedence, boolean nextTokenIsOperatorOrStart, boolean prevTokenIsOperatorOrStart, int nbOperands) {
         this.charOperator = charOperator;
         this.precedence = precedence;
         this.nextTokenIsOperatorOrStart = nextTokenIsOperatorOrStart;
         this.prevTokenIsOperatorOrStart = prevTokenIsOperatorOrStart;
-        this.generator = generator;
+        this.nbOperands = nbOperands;
     }
 
     @Override
     public void toExpression(Stack<Expr> operands, Stack<Token> operators) {
         if (!operators.empty() && operators.peek().precedence() >= this.precedence()) {
-            operands.push(operators.pop().getExpr(operands));
+            Token.getExpr(operands, operators);
         }
         operators.push(this);
     }
 
-    public Expr getExpr(Stack<Expr> operands) {
-        return generator.apply(operands);
-    }
-
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "[char=" + charOperator + ", precedence=" + precedence + "]";
+        return getClass().getSimpleName() + "[char=" + charOperator + "]";
     }
 
     public boolean support(Stack<Character> chars, boolean prevTokenIsOperatorOrStart) {
@@ -49,8 +44,9 @@ public abstract class OperatorFactory implements Token, TokenFactory {
         return precedence;
     }
 
-    public char charOperator() {
-        return charOperator;
+    @Override
+    public int nbOperands() {
+        return this.nbOperands;
     }
 
     public Token getToken(Stack<Character> chars) {
