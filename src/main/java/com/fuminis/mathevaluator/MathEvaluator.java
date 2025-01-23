@@ -127,7 +127,7 @@ public class MathEvaluator {
             token.toExpression(operands, operators);
         }
         while (!operators.empty()) {
-            Token.getExpr(operands, operators);
+            operands.push(operators.pop().getExpr(operands));
         }
         return operands.pop();
     }

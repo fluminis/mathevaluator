@@ -13,7 +13,7 @@ public class CloseParenthesis extends SymbolFactory {
     @Override
     public void toExpression(Stack<Expr> operands, Stack<Operator> operators) {
         while (!operators.empty() && !(operators.peek() instanceof OpenParenthesis)) {
-            Token.getExpr(operands, operators);
+            operands.push(operators.pop().getExpr(operands));
         }
         if (operators.empty() || !(operators.peek() instanceof OpenParenthesis)) {
             throw new MathEvaluationException("a close parenthesis does not have corresponding open parenthesis");

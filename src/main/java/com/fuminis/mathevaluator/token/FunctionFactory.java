@@ -54,6 +54,7 @@ public class FunctionFactory implements TokenFactory {
 
         @Override
         public Expr getExpr(Stack<Expr> operands) {
+            assertNbOperand(operands);
             return mathFunction().getExpr(operands);
         }
 

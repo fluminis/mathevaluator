@@ -31,6 +31,7 @@ public final class OperatorFactory implements TokenFactory {
 
         @Override
         public Expr getExpr(Stack<Expr> operands) {
+            assertNbOperand(operands);
             return func.getExpr(operands);
         }
 
@@ -41,7 +42,7 @@ public final class OperatorFactory implements TokenFactory {
         @Override
         public void toExpression(Stack<Expr> operands, Stack<Operator> operators) {
             if (!operators.empty() && isOtherPrecedenceHigher(operators.peek())) {
-                Token.getExpr(operands, operators);
+                operands.push(operators.pop().getExpr(operands));
             }
             operators.push(this);
         }

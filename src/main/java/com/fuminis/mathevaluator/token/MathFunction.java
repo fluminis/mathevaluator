@@ -47,6 +47,7 @@ public class MathFunction implements Operator {
 
     @Override
     public Expr getExpr(Stack<Expr> operands) {
+        assertNbOperand(operands);
         List<Expr> exprs = new ArrayList<>(nbOperands);
         for (int i = 0; i < nbOperands; i++) {
             exprs.addFirst(operands.pop());

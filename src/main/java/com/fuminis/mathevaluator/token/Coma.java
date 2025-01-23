@@ -12,7 +12,7 @@ public class Coma extends SymbolFactory {
     @Override
     public void toExpression(Stack<Expr> operands, Stack<Operator> operators) {
         while (!operators.empty() && !(operators.peek() instanceof OpenParenthesis)) {
-            Token.getExpr(operands, operators);
+            operands.push(operators.pop().getExpr(operands));
         }
         // do not remove open parenthesis
     }
