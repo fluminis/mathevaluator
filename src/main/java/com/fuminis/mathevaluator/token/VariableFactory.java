@@ -64,5 +64,10 @@ public class VariableFactory implements TokenFactory {
         public void toExpression(Stack<Expr> operands, Stack<Token> operators) {
             operands.push(this);
         }
+
+        @Override
+        public int nbOperands() {
+            return 1;
+        }
     }
 }

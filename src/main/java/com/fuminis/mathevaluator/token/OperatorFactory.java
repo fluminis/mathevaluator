@@ -2,55 +2,71 @@ package com.fuminis.mathevaluator.token;
 
 import com.fuminis.mathevaluator.expr.Expr;
 
+import java.util.List;
 import java.util.Stack;
 
-public abstract class OperatorFactory implements Token, TokenFactory {
-    private final char charOperator;
-    private final int precedence;
-    private final boolean nextTokenIsOperatorOrStart;
-    private final boolean prevTokenIsOperatorOrStart;
-    private final int nbOperands;
+public final class OperatorFactory implements TokenFactory {
 
-    public OperatorFactory(char charOperator, int precedence, boolean nextTokenIsOperatorOrStart, boolean prevTokenIsOperatorOrStart, int nbOperands) {
-        this.charOperator = charOperator;
-        this.precedence = precedence;
-        this.nextTokenIsOperatorOrStart = nextTokenIsOperatorOrStart;
-        this.prevTokenIsOperatorOrStart = prevTokenIsOperatorOrStart;
-        this.nbOperands = nbOperands;
+    private final List<OperatorToken> operations;
+
+    private Token token;
+    private boolean nextTokenIsOperatorOrStart;
+
+    public OperatorFactory(List<OperatorToken> operations) {
+        this.operations = operations;
     }
 
-    @Override
-    public void toExpression(Stack<Expr> operands, Stack<Token> operators) {
-        if (!operators.empty() && operators.peek().precedence() >= this.precedence()) {
-            Token.getExpr(operands, operators);
+    public record OperatorToken(char charOperator,
+                                int precedence,
+                                boolean prevTokenIsOperatorOrStart,
+                                int nbOperands,
+                                FunctionFactory.MathFunction func) implements Token {
+
+        public OperatorToken(char charOperator, int precedence, boolean prevTokenIsOperatorOrStart, FunctionFactory.MathFunction.Function1 func) {
+            this(charOperator, precedence, prevTokenIsOperatorOrStart, 1, FunctionFactory.MathFunction.mathFunction(func));
         }
-        operators.push(this);
+
+        public OperatorToken(char charOperator, int precedence, boolean prevTokenIsOperatorOrStart, FunctionFactory.MathFunction.Function2 func) {
+            this(charOperator, precedence, prevTokenIsOperatorOrStart, 2, FunctionFactory.MathFunction.mathFunction(func));
+        }
+
+        @Override
+        public Expr getExpr(Stack<Expr> operands) {
+            return func.getExpr(operands);
+        }
+
+        @Override
+        public void toExpression(Stack<Expr> operands, Stack<Token> operators) {
+            if (!operators.empty() && operators.peek().precedence() >= this.precedence()) {
+                Token.getExpr(operands, operators);
+            }
+            operators.push(this);
+        }
+
+        @Override
+        public String toString() {
+            return getClass().getSimpleName() + "[char=" + charOperator + ", prevTokenIsOperatorOrStart=" + prevTokenIsOperatorOrStart + "]";
+        }
     }
 
     @Override
-    public String toString() {
-        return getClass().getSimpleName() + "[char=" + charOperator + "]";
-    }
-
     public boolean support(Stack<Character> chars, boolean prevTokenIsOperatorOrStart) {
-        return charOperator == chars.peek() && this.prevTokenIsOperatorOrStart == prevTokenIsOperatorOrStart;
-    }
-
-    public boolean nextTokenIsOperatorOrStart() {
-        return nextTokenIsOperatorOrStart;
-    }
-
-    public int precedence() {
-        return precedence;
+        for (OperatorToken operatorToken : operations) {
+            if (operatorToken.charOperator() == chars.peek() && operatorToken.prevTokenIsOperatorOrStart() == prevTokenIsOperatorOrStart) {
+                token = operatorToken;
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
-    public int nbOperands() {
-        return this.nbOperands;
+    public boolean nextTokenIsOperatorOrStart() {
+        return true;
     }
 
     public Token getToken(Stack<Character> chars) {
         chars.pop();
-        return this;
+        return token;
     }
 }

@@ -1,17 +1,13 @@
 package com.fuminis.mathevaluator;
 
 import com.fuminis.mathevaluator.expr.Expr;
-import com.fuminis.mathevaluator.token.Addition;
 import com.fuminis.mathevaluator.token.CloseParenthesis;
 import com.fuminis.mathevaluator.token.Coma;
-import com.fuminis.mathevaluator.token.Division;
 import com.fuminis.mathevaluator.token.FunctionFactory;
-import com.fuminis.mathevaluator.token.Multiplication;
-import com.fuminis.mathevaluator.token.Negative;
 import com.fuminis.mathevaluator.token.NumberFactory;
 import com.fuminis.mathevaluator.token.OpenParenthesis;
-import com.fuminis.mathevaluator.token.Pow;
-import com.fuminis.mathevaluator.token.Subtraction;
+import com.fuminis.mathevaluator.token.OperatorFactory;
+import com.fuminis.mathevaluator.token.OperatorFactory.OperatorToken;
 import com.fuminis.mathevaluator.token.Token;
 import com.fuminis.mathevaluator.token.TokenFactory;
 import com.fuminis.mathevaluator.token.VariableFactory;
@@ -29,12 +25,14 @@ public class MathEvaluator {
 
     private static final List<TokenFactory> DEFAULT_FACTORIES = List.of(
             new NumberFactory(),
-            new Addition(),
-            new Subtraction(),
-            new Negative(),
-            new Multiplication(),
-            new Division(),
-            new Pow(),
+            new OperatorFactory(List.of(
+                    new OperatorToken('+', 1, false, Double::sum),
+                    new OperatorToken('-', 1, false, (a, b) -> a - b),
+                    new OperatorToken('-', 5, true, a -> -a),
+                    new OperatorToken('/', 2, false, (a, b) -> a / b),
+                    new OperatorToken('*', 2, false, (a, b) -> a * b),
+                    new OperatorToken('^', 3, false, Math::pow)
+            )),
             new OpenParenthesis(),
             new CloseParenthesis(),
             new Coma()

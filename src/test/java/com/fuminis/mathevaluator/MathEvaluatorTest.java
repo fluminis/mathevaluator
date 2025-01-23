@@ -117,13 +117,13 @@ class MathEvaluatorTest {
 
     @ParameterizedTest
     @CsvSource({
-            "1-1, 0",
-            "1 -1, 0",
-            "1- 1, 0",
-            "1 - 1, 0",
-            "1- -1, 2",
-            "1 - -1, 2",
-            "1--1, 2",
+            "2-1, 1",
+            "2 -1, 1",
+            "2- 1, 1",
+            "2 - 1, 1",
+            "2- -1, 3",
+            "3 - -1, 4",
+            "2--1, 3",
             "-(2+3), -5",
             "(2+3)*(4-2), 10",
             "((2+3)*(4-2)), 10",
@@ -180,7 +180,7 @@ class MathEvaluatorTest {
     void notProperlyFormed3() {
         var math = MathEvaluator.of("1+");
         assertThatThrownBy(math::calculate).isInstanceOf(MathEvaluationException.class)
-                .hasMessage("wrong number of operands for Addition[char=+]");
+                .hasMessage("wrong number of operands for OperatorToken[char=+, prevTokenIsOperatorOrStart=false]");
     }
 
     @Test

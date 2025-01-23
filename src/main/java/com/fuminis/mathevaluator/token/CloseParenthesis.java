@@ -5,7 +5,7 @@ import com.fuminis.mathevaluator.expr.Expr;
 
 import java.util.Stack;
 
-public class CloseParenthesis extends OperatorFactory {
+public class CloseParenthesis extends SymbolFactory {
     public CloseParenthesis() {
         super(')', 4, false, false, 2);
     }

@@ -4,7 +4,7 @@ import com.fuminis.mathevaluator.expr.Expr;
 
 import java.util.Stack;
 
-public class OpenParenthesis extends OperatorFactory {
+public class OpenParenthesis extends SymbolFactory {
     public OpenParenthesis() {
         super('(', -1, true, true, 2);
     }

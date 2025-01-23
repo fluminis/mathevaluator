@@ -10,9 +10,7 @@ public interface Token {
         return 0;
     }
 
-    default int nbOperands() {
-        return 2;
-    }
+    int nbOperands();
 
     Expr getExpr(Stack<Expr> operands);
 

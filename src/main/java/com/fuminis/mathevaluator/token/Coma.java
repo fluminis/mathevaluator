@@ -4,7 +4,7 @@ import com.fuminis.mathevaluator.expr.Expr;
 
 import java.util.Stack;
 
-public class Coma extends OperatorFactory {
+public class Coma extends SymbolFactory {
     public Coma() {
         super(',', 4, false, false, 2);
     }
