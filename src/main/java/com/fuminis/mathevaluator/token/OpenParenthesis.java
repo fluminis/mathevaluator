@@ -4,18 +4,28 @@ import com.fuminis.mathevaluator.expr.Expr;
 
 import java.util.Stack;
 
-public class OpenParenthesis extends SymbolFactory {
+public class OpenParenthesis extends SymbolFactory implements Operator {
     public OpenParenthesis() {
-        super('(', -1, true, true, 2);
+        super('(', true, true);
+    }
+
+    @Override
+    public void toExpression(Stack<Expr> operands, Stack<Operator> operators) {
+        operators.push(this);
+    }
+
+    @Override
+    public int precedence() {
+        return 0;
+    }
+
+    @Override
+    public int nbOperands() {
+        return 0;
     }
 
     @Override
     public Expr getExpr(Stack<Expr> operands) {
         return null;
-    }
-
-    @Override
-    public void toExpression(Stack<Expr> operands, Stack<Token> operators) {
-        operators.push(this);
     }
 }

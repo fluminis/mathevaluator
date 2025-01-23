@@ -7,6 +7,7 @@ import com.fuminis.mathevaluator.token.FunctionFactory;
 import com.fuminis.mathevaluator.token.MathFunction;
 import com.fuminis.mathevaluator.token.NumberFactory;
 import com.fuminis.mathevaluator.token.OpenParenthesis;
+import com.fuminis.mathevaluator.token.Operator;
 import com.fuminis.mathevaluator.token.OperatorFactory;
 import com.fuminis.mathevaluator.token.Token;
 import com.fuminis.mathevaluator.token.TokenFactory;
@@ -121,7 +122,7 @@ public class MathEvaluator {
 
     private Expr toExpression(List<Token> tokens) {
         Stack<Expr> operands = new Stack<>();
-        Stack<Token> operators = new Stack<>();
+        Stack<Operator> operators = new Stack<>();
         for (Token token : tokens) {
             token.toExpression(operands, operators);
         }

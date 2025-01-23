@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Stack;
 import java.util.function.Function;
 
-public class MathFunction {
+public class MathFunction implements Operator {
 
     public interface Function1 {
         double apply(double a);
@@ -37,26 +37,33 @@ public class MathFunction {
         return new MathFunction(3, array -> funct.apply(array[0], array[1], array[2]));
     }
 
-    private final int nbArgs;
-    private final Function<Double[], Double> funct;
+    private final int nbOperands;
+    private final Function<Double[], Double> func;
 
-    private MathFunction(int nbArgs, Function<Double[], Double> funct) {
-        this.nbArgs = nbArgs;
-        this.funct = funct;
+    private MathFunction(int nbOperands, Function<Double[], Double> func) {
+        this.nbOperands = nbOperands;
+        this.func = func;
     }
 
+    @Override
     public Expr getExpr(Stack<Expr> operands) {
-        List<Expr> exprs = new ArrayList<>(nbArgs);
-        for (int i = 0; i < nbArgs; i++) {
+        List<Expr> exprs = new ArrayList<>(nbOperands);
+        for (int i = 0; i < nbOperands; i++) {
             exprs.addFirst(operands.pop());
         }
         return () -> {
             Double[] args = exprs.stream().map(Expr::evaluate).toArray(Double[]::new);
-            return funct.apply(args);
+            return func.apply(args);
         };
     }
 
-    public int nbArgs() {
-        return nbArgs;
+    @Override
+    public int precedence() {
+        return 5;
+    }
+
+    @Override
+    public int nbOperands() {
+        return nbOperands;
     }
 }

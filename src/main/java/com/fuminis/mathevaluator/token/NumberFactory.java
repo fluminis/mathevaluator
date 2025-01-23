@@ -11,6 +11,7 @@ public class NumberFactory implements TokenFactory {
         return Character.isDigit(chars.peek()) || chars.peek() == '.';
     }
 
+    @Override
     public Token getToken(Stack<Character> chars) {
         String currentToken = "";
         do {
@@ -20,29 +21,16 @@ public class NumberFactory implements TokenFactory {
         return new Number(number);
     }
 
+    @Override
     public boolean nextTokenIsOperatorOrStart() {
         return false;
     }
 
     record Number(double evaluate) implements Expr, Token {
-        @Override
-        public Expr getExpr(Stack<Expr> operands) {
-            return null;
-        }
 
         @Override
-        public void toExpression(Stack<Expr> operands, Stack<Token> operators) {
+        public void toExpression(Stack<Expr> operands, Stack<Operator> operators) {
             operands.push(this);
-        }
-
-        @Override
-        public int precedence() {
-            return 0;
-        }
-
-        @Override
-        public int nbOperands() {
-            return 1;
         }
     }
 }

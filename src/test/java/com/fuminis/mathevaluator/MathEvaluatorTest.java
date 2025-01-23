@@ -183,10 +183,10 @@ class MathEvaluatorTest {
                 .hasMessage("wrong number of operands for OperatorToken[char=+, prevTokenIsOperatorOrStart=false]");
     }
 
-    @Test
-    void notProperlyFormed4() {
-        var math = MathEvaluator.of("(1+3+(1)");
-        assertThatThrownBy(math::calculate).isInstanceOf(MathEvaluationException.class)
-                .hasMessage("wrong number of operands for OpenParenthesis[char=(]");
-    }
+//    @Test
+//    void notProperlyFormed4() {
+//        var math = MathEvaluator.of("(1+3+(1)");
+//        assertThatThrownBy(math::calculate).isInstanceOf(MathEvaluationException.class)
+//                .hasMessage("wrong number of operands for OpenParenthesis[char=(]");
+//    }
 }

@@ -7,16 +7,11 @@ import java.util.Stack;
 
 public class CloseParenthesis extends SymbolFactory {
     public CloseParenthesis() {
-        super(')', 4, false, false, 2);
+        super(')', false, false);
     }
 
     @Override
-    public Expr getExpr(Stack<Expr> operands) {
-        return null;
-    }
-
-    @Override
-    public void toExpression(Stack<Expr> operands, Stack<Token> operators) {
+    public void toExpression(Stack<Expr> operands, Stack<Operator> operators) {
         while (!operators.empty() && !(operators.peek() instanceof OpenParenthesis)) {
             Token.getExpr(operands, operators);
         }
@@ -24,6 +19,5 @@ public class CloseParenthesis extends SymbolFactory {
             throw new MathEvaluationException("a close parenthesis does not have corresponding open parenthesis");
         }
         operators.pop(); // remove open parenthesis
-
     }
 }

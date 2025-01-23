@@ -23,6 +23,7 @@ public class FunctionFactory implements TokenFactory {
         return false;
     }
 
+    @Override
     public Token getToken(Stack<Character> chars) {
         String funcName = "";
         do {
@@ -31,6 +32,7 @@ public class FunctionFactory implements TokenFactory {
         return new FunctionToken(this, funcName);
     }
 
+    @Override
     public boolean nextTokenIsOperatorOrStart() {
         return true;
     }
@@ -44,14 +46,25 @@ public class FunctionFactory implements TokenFactory {
         this.functions.put(funcName, func);
     }
 
-    record FunctionToken(FunctionFactory functionFactory, String funcName) implements Token {
+    record FunctionToken(FunctionFactory functionFactory, String funcName) implements Token, Operator {
+        @Override
         public int precedence() {
-            return 5;
+            return mathFunction().precedence();
         }
 
         @Override
         public Expr getExpr(Stack<Expr> operands) {
             return mathFunction().getExpr(operands);
+        }
+
+        @Override
+        public void toExpression(Stack<Expr> operands, Stack<Operator> operators) {
+            operators.push(this);
+        }
+
+        @Override
+        public int nbOperands() {
+            return mathFunction().nbOperands();
         }
 
         private MathFunction mathFunction() {
@@ -60,16 +73,6 @@ public class FunctionFactory implements TokenFactory {
                 throw new MathEvaluationException("Function '" + funcName + "' not found");
             }
             return func;
-        }
-
-        @Override
-        public void toExpression(Stack<Expr> operands, Stack<Token> operators) {
-            operators.push(this);
-        }
-
-        @Override
-        public int nbOperands() {
-            return mathFunction().nbArgs();
         }
     }
 

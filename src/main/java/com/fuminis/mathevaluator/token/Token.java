@@ -6,22 +6,14 @@ import com.fuminis.mathevaluator.expr.Expr;
 import java.util.Stack;
 
 public interface Token {
-    int precedence();
 
-    int nbOperands();
+    void toExpression(Stack<Expr> operands, Stack<Operator> operators);
 
-    Expr getExpr(Stack<Expr> operands);
-
-    void toExpression(Stack<Expr> operands, Stack<Token> operators);
-
-    static void getExpr(Stack<Expr> operands, Stack<Token> operators) {
-        Token token = operators.pop();
-        if (token.nbOperands() > operands.size()) {
-            throw new MathEvaluationException("wrong number of operands for " + token);
+    static void getExpr(Stack<Expr> operands, Stack<Operator> operators) {
+        Operator operator = operators.pop();
+        if (operator.nbOperands() > operands.size()) {
+            throw new MathEvaluationException("wrong number of operands for " + operator);
         }
-        Expr expr = token.getExpr(operands);
-        if (expr != null) {
-            operands.push(expr);
-        }
+        operands.push(operator.getExpr(operands));
     }
 }

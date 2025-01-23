@@ -23,6 +23,7 @@ public class VariableFactory implements TokenFactory {
         return false;
     }
 
+    @Override
     public Token getToken(Stack<Character> chars) {
         String varName = "";
         do {
@@ -31,6 +32,7 @@ public class VariableFactory implements TokenFactory {
         return new Variable(this, varName);
     }
 
+    @Override
     public boolean nextTokenIsOperatorOrStart() {
         return false;
     }
@@ -56,23 +58,8 @@ public class VariableFactory implements TokenFactory {
         }
 
         @Override
-        public Expr getExpr(Stack<Expr> operands) {
-            return this;
-        }
-
-        @Override
-        public void toExpression(Stack<Expr> operands, Stack<Token> operators) {
+        public void toExpression(Stack<Expr> operands, Stack<Operator> operators) {
             operands.push(this);
-        }
-
-        @Override
-        public int precedence() {
-            return 0;
-        }
-
-        @Override
-        public int nbOperands() {
-            return 1;
         }
     }
 }

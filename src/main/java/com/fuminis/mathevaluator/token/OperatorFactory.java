@@ -27,16 +27,20 @@ public final class OperatorFactory implements TokenFactory {
                                 int precedence,
                                 boolean prevTokenIsOperatorOrStart,
                                 int nbOperands,
-                                MathFunction func) implements Token {
+                                MathFunction func) implements Token, Operator {
 
         @Override
         public Expr getExpr(Stack<Expr> operands) {
             return func.getExpr(operands);
         }
 
+        private boolean isOtherPrecedenceHigher(Operator operator) {
+            return operator.precedence() >= precedence;
+        }
+
         @Override
-        public void toExpression(Stack<Expr> operands, Stack<Token> operators) {
-            if (!operators.empty() && operators.peek().precedence() >= this.precedence()) {
+        public void toExpression(Stack<Expr> operands, Stack<Operator> operators) {
+            if (!operators.empty() && isOtherPrecedenceHigher(operators.peek())) {
                 Token.getExpr(operands, operators);
             }
             operators.push(this);
@@ -64,6 +68,7 @@ public final class OperatorFactory implements TokenFactory {
         return true;
     }
 
+    @Override
     public Token getToken(Stack<Character> chars) {
         chars.pop();
         return token;
