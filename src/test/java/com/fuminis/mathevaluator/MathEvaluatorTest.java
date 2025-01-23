@@ -95,7 +95,12 @@ class MathEvaluatorTest {
 
     @Test
     void function3() {
-        assertThat(MathEvaluator.of("f(1, 2, 3)").addFunction("f", MathFunction.mathFunction(3, d -> d[0] + 2 * d[1] + 3 * d[2])).calculate()).isEqualTo(14);
+        assertThat(MathEvaluator.of("f(1, 2, 3)").addFunction("f", MathFunction.mathFunction((a, b, c) -> a + 2 * b + 3 * c)).calculate()).isEqualTo(14);
+    }
+
+    @Test
+    void function4() {
+        assertThat(MathEvaluator.of("f(1, 2, 3, 4)").addFunction("f", MathFunction.mathFunction(4, d -> d[0] + 2 * d[1] + 3 * d[2] + 4 * d[3])).calculate()).isEqualTo(30);
     }
 
     @ParameterizedTest
