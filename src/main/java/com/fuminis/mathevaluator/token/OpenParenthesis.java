@@ -1,5 +1,6 @@
 package com.fuminis.mathevaluator.token;
 
+import com.fuminis.mathevaluator.MathEvaluationException;
 import com.fuminis.mathevaluator.expr.Expr;
 
 import java.util.Stack;
@@ -26,6 +27,6 @@ public class OpenParenthesis extends SymbolFactory implements Operator {
 
     @Override
     public Expr getExpr(Stack<Expr> operands) {
-        return null;
+        throw new MathEvaluationException("an open parenthesis does not have corresponding close parenthesis");
     }
 }

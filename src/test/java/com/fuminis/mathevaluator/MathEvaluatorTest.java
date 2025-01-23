@@ -169,24 +169,16 @@ class MathEvaluatorTest {
                             "  ^");
     }
 
-    @Test
-    void notProperlyFormed2() {
-        var math = MathEvaluator.of("1+3)+(1)");
+    @ParameterizedTest
+    @CsvSource(value = {
+            "1+3)+(1); a close parenthesis does not have corresponding open parenthesis",
+            "1+; wrong number of operands for OperatorToken[char=+, prevTokenIsOperatorOrStart=false]",
+            "(1+3+(1); an open parenthesis does not have corresponding close parenthesis",
+            "1+(3+(1); an open parenthesis does not have corresponding close parenthesis"
+    }, delimiter = ';')
+    void notProperlyFormedTestSuite(String expression, String errorMessage) {
+        var math = MathEvaluator.of(expression);
         assertThatThrownBy(math::calculate).isInstanceOf(MathEvaluationException.class)
-                .hasMessage("a close parenthesis does not have corresponding open parenthesis");
+                .hasMessage(errorMessage);
     }
-
-    @Test
-    void notProperlyFormed3() {
-        var math = MathEvaluator.of("1+");
-        assertThatThrownBy(math::calculate).isInstanceOf(MathEvaluationException.class)
-                .hasMessage("wrong number of operands for OperatorToken[char=+, prevTokenIsOperatorOrStart=false]");
-    }
-
-//    @Test
-//    void notProperlyFormed4() {
-//        var math = MathEvaluator.of("(1+3+(1)");
-//        assertThatThrownBy(math::calculate).isInstanceOf(MathEvaluationException.class)
-//                .hasMessage("wrong number of operands for OpenParenthesis[char=(]");
-//    }
 }
