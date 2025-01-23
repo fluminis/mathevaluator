@@ -7,10 +7,17 @@ import java.util.Stack;
 
 public final class OperatorFactory implements TokenFactory {
 
+    public static OperatorToken operator(char charOperator, int precedence, boolean prevTokenIsOperatorOrStart, MathFunction.Function1 func) {
+        return new OperatorToken(charOperator, precedence, prevTokenIsOperatorOrStart, 1, MathFunction.mathFunction(func));
+    }
+
+    public static OperatorToken operator(char charOperator, int precedence, boolean prevTokenIsOperatorOrStart, MathFunction.Function2 func) {
+        return new OperatorToken(charOperator, precedence, prevTokenIsOperatorOrStart, 2, MathFunction.mathFunction(func));
+    }
+
     private final List<OperatorToken> operations;
 
     private Token token;
-    private boolean nextTokenIsOperatorOrStart;
 
     public OperatorFactory(List<OperatorToken> operations) {
         this.operations = operations;
@@ -20,15 +27,7 @@ public final class OperatorFactory implements TokenFactory {
                                 int precedence,
                                 boolean prevTokenIsOperatorOrStart,
                                 int nbOperands,
-                                FunctionFactory.MathFunction func) implements Token {
-
-        public OperatorToken(char charOperator, int precedence, boolean prevTokenIsOperatorOrStart, FunctionFactory.MathFunction.Function1 func) {
-            this(charOperator, precedence, prevTokenIsOperatorOrStart, 1, FunctionFactory.MathFunction.mathFunction(func));
-        }
-
-        public OperatorToken(char charOperator, int precedence, boolean prevTokenIsOperatorOrStart, FunctionFactory.MathFunction.Function2 func) {
-            this(charOperator, precedence, prevTokenIsOperatorOrStart, 2, FunctionFactory.MathFunction.mathFunction(func));
-        }
+                                MathFunction func) implements Token {
 
         @Override
         public Expr getExpr(Stack<Expr> operands) {

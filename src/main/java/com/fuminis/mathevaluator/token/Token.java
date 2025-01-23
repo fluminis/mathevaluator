@@ -6,9 +6,7 @@ import com.fuminis.mathevaluator.expr.Expr;
 import java.util.Stack;
 
 public interface Token {
-    default int precedence() {
-        return 0;
-    }
+    int precedence();
 
     int nbOperands();
 

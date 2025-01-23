@@ -4,10 +4,10 @@ import com.fuminis.mathevaluator.expr.Expr;
 import com.fuminis.mathevaluator.token.CloseParenthesis;
 import com.fuminis.mathevaluator.token.Coma;
 import com.fuminis.mathevaluator.token.FunctionFactory;
+import com.fuminis.mathevaluator.token.MathFunction;
 import com.fuminis.mathevaluator.token.NumberFactory;
 import com.fuminis.mathevaluator.token.OpenParenthesis;
 import com.fuminis.mathevaluator.token.OperatorFactory;
-import com.fuminis.mathevaluator.token.OperatorFactory.OperatorToken;
 import com.fuminis.mathevaluator.token.Token;
 import com.fuminis.mathevaluator.token.TokenFactory;
 import com.fuminis.mathevaluator.token.VariableFactory;
@@ -26,12 +26,12 @@ public class MathEvaluator {
     private static final List<TokenFactory> DEFAULT_FACTORIES = List.of(
             new NumberFactory(),
             new OperatorFactory(List.of(
-                    new OperatorToken('+', 1, false, Double::sum),
-                    new OperatorToken('-', 1, false, (a, b) -> a - b),
-                    new OperatorToken('-', 5, true, a -> -a),
-                    new OperatorToken('/', 2, false, (a, b) -> a / b),
-                    new OperatorToken('*', 2, false, (a, b) -> a * b),
-                    new OperatorToken('^', 3, false, Math::pow)
+                    OperatorFactory.operator('+', 1, false, Double::sum),
+                    OperatorFactory.operator('-', 1, false, (a, b) -> a - b),
+                    OperatorFactory.operator('-', 5, true, a -> -a),
+                    OperatorFactory.operator('/', 2, false, (a, b) -> a / b),
+                    OperatorFactory.operator('*', 2, false, (a, b) -> a * b),
+                    OperatorFactory.operator('^', 3, false, Math::pow)
             )),
             new OpenParenthesis(),
             new CloseParenthesis(),
@@ -64,12 +64,12 @@ public class MathEvaluator {
         return this;
     }
 
-    public MathEvaluator setFunctions(Map<String, FunctionFactory.MathFunction> functions) {
+    public MathEvaluator setFunctions(Map<String, MathFunction> functions) {
         functionFactory.setFunctions(functions);
         return this;
     }
 
-    public MathEvaluator addFunction(String funcName, FunctionFactory.MathFunction func) {
+    public MathEvaluator addFunction(String funcName, MathFunction func) {
         functionFactory.addFunction(funcName, func);
         return this;
     }

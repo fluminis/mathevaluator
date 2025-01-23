@@ -20,11 +20,8 @@ public abstract class SymbolFactory implements Token, TokenFactory {
     }
 
     @Override
-    public void toExpression(Stack<Expr> operands, Stack<Token> operators) {
-        if (!operators.empty() && operators.peek().precedence() >= this.precedence()) {
-            Token.getExpr(operands, operators);
-        }
-        operators.push(this);
+    public Expr getExpr(Stack<Expr> operands) {
+        return null;
     }
 
     @Override

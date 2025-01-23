@@ -10,11 +10,6 @@ public class Coma extends SymbolFactory {
     }
 
     @Override
-    public Expr getExpr(Stack<Expr> operands) {
-        return null;
-    }
-
-    @Override
     public void toExpression(Stack<Expr> operands, Stack<Token> operators) {
         while (!operators.empty() && !(operators.peek() instanceof OpenParenthesis)) {
             Token.getExpr(operands, operators);

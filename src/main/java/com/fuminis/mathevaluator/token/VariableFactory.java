@@ -66,6 +66,11 @@ public class VariableFactory implements TokenFactory {
         }
 
         @Override
+        public int precedence() {
+            return 0;
+        }
+
+        @Override
         public int nbOperands() {
             return 1;
         }

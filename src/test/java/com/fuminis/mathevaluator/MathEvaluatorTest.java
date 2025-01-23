@@ -1,6 +1,6 @@
 package com.fuminis.mathevaluator;
 
-import com.fuminis.mathevaluator.token.FunctionFactory.MathFunction;
+import com.fuminis.mathevaluator.token.MathFunction;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
